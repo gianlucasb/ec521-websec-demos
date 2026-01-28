@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Secure SQL Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0d2818 0%, #1a4d2e 50%, #2d6a4f 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: #40c057;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #bdc3c7;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .secure-badge {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .secure-badge span {
+            background: rgba(64, 192, 87, 0.2);
+            border: 1px solid #40c057;
+            color: #40c057;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(64, 192, 87, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #40c057;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #40c057;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #51cf66;
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #bdc3c7;
+        }
+
+        .register-link a {
+            color: #40c057;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .info-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border-left: 4px solid #40c057;
+        }
+
+        .info-box h3 {
+            color: #40c057;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .info-box p {
+            color: #bdc3c7;
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #40c057;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            background: none;
+            padding: 0;
+            color: #a9dc76;
+            font-size: 0.85rem;
+            white-space: pre;
+        }
+
+        .code-block .comment {
+            color: #78dce8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️</div>
+        <h1>Secure Login</h1>
+        <p class="subtitle">Protected with Prepared Statements</p>
+
+        <div class="secure-badge">
+            <span>🔒 SQL INJECTION PROTECTED</span>
+        </div>
+
+        <div class="login-box">
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="text" id="password" name="password" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit">Login</button>
+            </form>
+
+            <p class="register-link">
+                Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h3>🛡️ Why SQL Injection Doesn't Work Here</h3>
+            <p>
+                This login uses <strong>parameterized queries</strong> (prepared statements).
+                User input is never concatenated into the SQL query.
+                <br><br>
+                Try the same attacks from the vulnerable version:
+                <br>• <code>' OR '1'='1</code>
+                <br>• <code>admin'--</code>
+                <br><br>
+                They won't work! The database treats input as <em>data</em>, not <em>code</em>.
+            </p>
+            <div class="code-block">
+<code><span class="comment"># VULNERABLE (string concatenation)</span>
+query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+
+<span class="comment"># SECURE (parameterized query)</span>
+query = "SELECT * FROM users WHERE username = ? AND password = ?"
+cursor.execute(query, (username, password))</code>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

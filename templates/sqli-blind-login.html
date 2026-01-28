@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Blind SQL Injection Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: #9b59b6;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #bdc3c7;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #9b59b6;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #9b59b6;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #8e44ad;
+        }
+
+        .error {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .error-user {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        .error-password {
+            background: rgba(241, 196, 15, 0.2);
+            border: 1px solid #f1c40f;
+            color: #f1c40f;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #bdc3c7;
+        }
+
+        .register-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .hint-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border-left: 4px solid #9b59b6;
+        }
+
+        .hint-box h3 {
+            color: #9b59b6;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .hint-box p {
+            color: #bdc3c7;
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid #3498db;
+            border-radius: 8px;
+        }
+
+        .info-box h4 {
+            color: #3498db;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .info-box p {
+            color: #85c1e9;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🔍</div>
+        <h1>Secure Login</h1>
+        <p class="subtitle">Blind SQL Injection Demo</p>
+
+        <div class="login-box">
+            {% if error %}
+            <div class="error {% if error_type == 'password' %}error-password{% else %}error-user{% endif %}">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="text" id="password" name="password" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit">Login</button>
+            </form>
+
+            <p class="register-link">
+                Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h4>🎯 Your Mission</h4>
+            <p>
+                There is a secret admin account. You don't know the username or password.
+                Find the admin username and log in as admin!
+            </p>
+        </div>
+
+        <div class="hint-box">
+            <h3>🔍 Hints for Students</h3>
+            <p>
+                Notice the <strong>different error messages</strong>:
+                <br>• <span style="color: #e74c3c;">"User does not exist"</span> - username not found
+                <br>• <span style="color: #f1c40f;">"Password is incorrect"</span> - username exists!
+                <br><br>
+                This information leak enables <strong>blind SQL injection</strong>.
+                You can ask yes/no questions about the database!
+                <br><br>
+                Try in username field: <code>' or username like 'A%' --</code>
+                <br>
+                (Use any password - the <code>--</code> comments out the password check)
+                <br><br>
+                Does any username start with 'A'? What about 'E'?
+                <br>
+                Bruteforce one character at a time to discover the admin username,
+                <br>then use <code>EC521admin' --</code> to bypass the password!
+            </p>
+        </div>
+    </div>
+</body>
+</html>

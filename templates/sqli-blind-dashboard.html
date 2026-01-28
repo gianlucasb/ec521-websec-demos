@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Blind SQL Injection Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .welcome-box {
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            {% if is_admin %}
+            background: linear-gradient(145deg, #c0392b, #e74c3c);
+            border: 3px solid #ff6b6b;
+            box-shadow: 0 0 40px rgba(231, 76, 60, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+            {% else %}
+            background: linear-gradient(145deg, #27ae60, #2ecc71);
+            border: 3px solid #58d68d;
+            box-shadow: 0 0 30px rgba(46, 204, 113, 0.3);
+            {% endif %}
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(231, 76, 60, 0.4); }
+            50% { box-shadow: 0 0 60px rgba(231, 76, 60, 0.7); }
+        }
+
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .username {
+            font-size: 1.5rem;
+            font-weight: bold;
+            {% if is_admin %}
+            color: #ffeb3b;
+            text-shadow: 0 0 10px #ffeb3b;
+            {% else %}
+            color: #fff;
+            {% endif %}
+        }
+
+        .role-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            {% if is_admin %}
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffeb3b;
+            border: 2px solid #ffeb3b;
+            {% else %}
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            {% endif %}
+        }
+
+        {% if is_admin %}
+        .admin-message {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #ffeb3b;
+        }
+
+        .warning {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(155, 89, 182, 0.2);
+            border: 2px solid #9b59b6;
+            border-radius: 10px;
+        }
+
+        .warning h3 {
+            color: #9b59b6;
+            margin-bottom: 10px;
+        }
+
+        .warning p {
+            color: #d7bde2;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+        {% endif %}
+
+        .logout-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        {% if is_admin %}
+        .confetti {
+            position: fixed;
+            font-size: 30px;
+            animation: fall linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        {% endif %}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-box">
+            <div class="icon">
+                {% if is_admin %}
+                👑
+                {% else %}
+                👤
+                {% endif %}
+            </div>
+            <h1>Welcome!</h1>
+            <p class="username">{{ username }}</p>
+            <span class="role-badge">
+                {% if is_admin %}
+                Administrator
+                {% else %}
+                User
+                {% endif %}
+            </span>
+
+            {% if is_admin %}
+            <div class="admin-message">
+                🎉 You discovered the secret admin username and logged in!
+            </div>
+            {% endif %}
+        </div>
+
+        {% if is_admin %}
+        <div class="warning">
+            <h3>🔍 Blind SQL Injection Success!</h3>
+            <p>
+                You exploited the information leak in the error messages to discover
+                the admin username character by character.
+                <br><br>
+                The different responses for "user not found" vs "wrong password"
+                allowed you to ask yes/no questions about the database:
+                <br><br>
+                <code>' or username like 'E%' --</code> → Does a user start with 'E'?
+                <br>
+                <code>' or username like 'EC%' --</code> → Does a user start with 'EC'?
+                <br><br>
+                This is called <strong>Boolean-based blind SQL injection</strong>.
+            </p>
+        </div>
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+
+    {% if is_admin %}
+    <script>
+        const emojis = ['🔍', '👑', '🔓', '💉', '🎯'];
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }, i * 100);
+        }
+    </script>
+    {% endif %}
+</body>
+</html>
