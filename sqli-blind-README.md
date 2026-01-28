@@ -207,6 +207,9 @@ For instructor testing only:
 | SQL Injection | 5001 | Classic SQL injection in login form |
 | **Blind SQL Injection** | 5002 | Boolean-based blind SQL injection (this demo) |
 | Secure SQL | 5003 | SQL injection prevention with prepared statements |
+| Reflected XSS | 5004 | Cross-site scripting via search |
+| XSS Encoded | 5005 | Output encoding only |
+| XSS + CSP | 5006 | Full protection with CSP |
 
 ## License
 
