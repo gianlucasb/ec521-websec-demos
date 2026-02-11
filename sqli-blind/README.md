@@ -6,7 +6,7 @@ A hands-on demonstration of blind SQL injection vulnerabilities for EC521 Introd
 
 This demo teaches students how blind SQL injection works by exploiting information leakage in error messages. Unlike classic SQL injection where you directly see data, blind SQL injection requires asking yes/no questions to extract information one bit at a time.
 
-**See also:** Compare with `sqli-app.py` (port 5001) for classic SQL injection.
+**See also:** Compare with `sqli-classic` (port 5001) for classic SQL injection.
 
 ## Learning Objectives
 
@@ -25,13 +25,13 @@ This demo teaches students how blind SQL injection works by exploiting informati
 ### Installation
 
 ```bash
-pip install -r sqli-blind-requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running the App
 
 ```bash
-python sqli-blind-app.py
+python app.py
 ```
 
 Visit `http://localhost:5002` in your browser.
@@ -175,12 +175,12 @@ The app prints executed SQL queries to the console:
 
 | File | Description |
 |------|-------------|
-| `sqli-blind-app.py` | Flask app with blind SQL injection |
+| `app.py` | Flask app with blind SQL injection |
 | `templates/sqli-blind-login.html` | Login with information leakage |
 | `templates/sqli-blind-register.html` | User registration |
 | `templates/sqli-blind-dashboard.html` | Dashboard (green=user, red=admin) |
-| `sqli-blind-requirements.txt` | Python dependencies |
-| `sqli-blind-README.md` | This documentation |
+| `requirements.txt` | Python dependencies |
+| `README.md` | This documentation |
 | `sqli-blind-database.db` | SQLite database (auto-created) |
 
 ## Secret Admin Credentials
@@ -197,19 +197,21 @@ For instructor testing only:
 | Speed | Fast | Slow (character by character) |
 | Complexity | Simple | More complex |
 | Detectability | Easier to detect | Harder to detect |
-| This repo | `sqli-app.py` (port 5001) | `sqli-blind-app.py` (port 5002) |
+| This series | `sqli-classic` (port 5001) | `sqli-blind` (port 5002) |
 
-## All Demos in This Repository
+## All Demos in This Series
 
-| Demo | Port | Description |
-|------|------|-------------|
-| Cookie Security | 5000 | Cookie manipulation attack |
-| SQL Injection | 5001 | Classic SQL injection in login form |
-| **Blind SQL Injection** | 5002 | Boolean-based blind SQL injection (this demo) |
-| Secure SQL | 5003 | SQL injection prevention with prepared statements |
-| Reflected XSS | 5004 | Cross-site scripting via search |
-| XSS Encoded | 5005 | Output encoding only |
-| XSS + CSP | 5006 | Full protection with CSP |
+| Folder | Port | Description |
+|--------|------|-------------|
+| cookie-demo | 5000 | Cookie manipulation attack |
+| sqli-classic | 5001 | Classic SQL injection in login form |
+| **sqli-blind** | 5002 | Boolean-based blind SQL injection (this demo) |
+| sqli-secure | 5003 | SQL injection prevention with prepared statements |
+| xss-reflected | 5004 | Cross-site scripting via search |
+| xss-encoded | 5005 | Output encoding only |
+| xss-csp | 5006 | Full protection with CSP |
+| xss-stored | 5007 | Stored XSS in notes app |
+| xss-dom | 5008 | DOM-based XSS |
 
 ## License
 

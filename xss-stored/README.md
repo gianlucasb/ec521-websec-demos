@@ -7,9 +7,9 @@ A hands-on demonstration of stored Cross-Site Scripting (XSS) vulnerabilities fo
 This demo teaches students how **stored XSS** attacks work by providing a deliberately vulnerable note-taking application. Notes are saved to the server and displayed without sanitization, allowing attackers to inject malicious JavaScript that affects **all users** who view the note.
 
 **See also:**
-- **Reflected XSS** (port 5004): `xss-reflected-app.py` - Non-persistent XSS
-- **Encoded** (port 5005): `xss-encoded-app.py` - Output encoding only
-- **CSP + HttpOnly** (port 5006): `xss-csp-app.py` - Full protection
+- **Reflected XSS** (port 5004): `xss-reflected` - Non-persistent XSS
+- **Encoded** (port 5005): `xss-encoded` - Output encoding only
+- **CSP + HttpOnly** (port 5006): `xss-csp` - Full protection
 
 ## Learning Objectives
 
@@ -28,13 +28,13 @@ This demo teaches students how **stored XSS** attacks work by providing a delibe
 ### Installation
 
 ```bash
-pip install -r xss-stored-requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running the App
 
 ```bash
-python xss-stored-app.py
+python app.py
 ```
 
 Visit `http://localhost:5007` in your browser.
@@ -198,9 +198,10 @@ response.set_cookie("secret", "s3cr3t", httponly=True)
 
 | File | Description |
 |------|-------------|
-| `xss-stored-app.py` | Flask app with stored XSS vulnerability |
-| `xss-stored-requirements.txt` | Python dependencies |
-| `xss-stored-README.md` | This documentation |
+| `app.py` | Flask app with stored XSS vulnerability |
+| `static/terrier.png` | Logo image |
+| `requirements.txt` | Python dependencies |
+| `README.md` | This documentation |
 
 ## Try These Payloads
 
@@ -214,18 +215,19 @@ response.set_cookie("secret", "s3cr3t", httponly=True)
 | `<marquee onstart=alert('XSS')>` | Marquee start event |
 | `<div onmouseover=alert('XSS')>Hover me</div>` | Mouse event |
 
-## All Demos in This Repository
+## All Demos in This Series
 
-| Demo | Port | Description |
-|------|------|-------------|
-| Cookie Security | 5000 | Cookie manipulation attack |
-| SQL Injection | 5001 | Classic SQL injection in login form |
-| Blind SQL Injection | 5002 | Boolean-based blind SQL injection |
-| Secure SQL | 5003 | SQL injection prevention with prepared statements |
-| Reflected XSS | 5004 | Cross-site scripting via search (reflected) |
-| XSS Encoded | 5005 | Output encoding only |
-| XSS + CSP | 5006 | Full protection with CSP |
-| **Stored XSS** | 5007 | Stored XSS in note-taking app (this demo) |
+| Folder | Port | Description |
+|--------|------|-------------|
+| cookie-demo | 5000 | Cookie manipulation attack |
+| sqli-classic | 5001 | Classic SQL injection in login form |
+| sqli-blind | 5002 | Boolean-based blind SQL injection |
+| sqli-secure | 5003 | SQL injection prevention with prepared statements |
+| xss-reflected | 5004 | Cross-site scripting via search (reflected) |
+| xss-encoded | 5005 | Output encoding only |
+| xss-csp | 5006 | Full protection with CSP |
+| **xss-stored** | 5007 | Stored XSS in note-taking app (this demo) |
+| xss-dom | 5008 | DOM-based XSS |
 
 ## License
 

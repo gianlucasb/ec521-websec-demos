@@ -23,13 +23,13 @@ This demo teaches students why cookies should never be trusted for authorization
 ### Installation
 
 ```bash
-pip install -r cookie-requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running the App
 
 ```bash
-python cookie-app.py
+python app.py
 ```
 
 Visit `http://localhost:5000` in your browser.
@@ -84,22 +84,24 @@ This app intentionally contains the following security issues:
 
 | File | Description |
 |------|-------------|
-| `cookie-app.py` | Flask application with insecure cookie handling |
+| `app.py` | Flask application with insecure cookie handling |
 | `templates/cookie-index.html` | Frontend with treasure hunt UI |
-| `cookie-requirements.txt` | Python dependencies |
-| `cookie-README.md` | This documentation |
+| `requirements.txt` | Python dependencies |
+| `README.md` | This documentation |
 
-## All Demos in This Repository
+## All Demos in This Series
 
-| Demo | Port | Description |
-|------|------|-------------|
-| **Cookie Security** | 5000 | Cookie manipulation attack (this demo) |
-| SQL Injection | 5001 | Classic SQL injection in login form |
-| Blind SQL Injection | 5002 | Boolean-based blind SQL injection |
-| Secure SQL | 5003 | SQL injection prevention with prepared statements |
-| Reflected XSS | 5004 | Cross-site scripting via search |
-| XSS Encoded | 5005 | Output encoding only |
-| XSS + CSP | 5006 | Full protection with CSP |
+| Folder | Port | Description |
+|--------|------|-------------|
+| **cookie-demo** | 5000 | Cookie manipulation attack (this demo) |
+| sqli-classic | 5001 | Classic SQL injection in login form |
+| sqli-blind | 5002 | Boolean-based blind SQL injection |
+| sqli-secure | 5003 | SQL injection prevention with prepared statements |
+| xss-reflected | 5004 | Cross-site scripting via search |
+| xss-encoded | 5005 | Output encoding only |
+| xss-csp | 5006 | Full protection with CSP |
+| xss-stored | 5007 | Stored XSS in notes app |
+| xss-dom | 5008 | DOM-based XSS |
 
 ## License
 

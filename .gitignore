@@ -208,3 +208,6 @@ __marimo__/
 
 # SQLite databases (auto-generated)
 *.db
+
+# Release zip files
+*.zip

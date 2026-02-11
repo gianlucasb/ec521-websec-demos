@@ -6,7 +6,7 @@ A hands-on demonstration of SQL injection vulnerabilities for EC521 Introduction
 
 This demo teaches students how SQL injection attacks work by providing a deliberately vulnerable login form. Students will learn to exploit the vulnerability and understand why parameterized queries are essential.
 
-**See also:** Compare with `sqli-secure-app.py` (port 5003) to understand how to prevent this attack.
+**See also:** Compare with `sqli-secure` (port 5003) to understand how to prevent this attack.
 
 ## Learning Objectives
 
@@ -25,13 +25,13 @@ This demo teaches students how SQL injection attacks work by providing a deliber
 ### Installation
 
 ```bash
-pip install -r sqli-requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running the App
 
 ```bash
-python sqli-app.py
+python app.py
 ```
 
 Visit `http://localhost:5001` in your browser.
@@ -144,12 +144,12 @@ The app prints the executed SQL query to the console. Watch the terminal output 
 
 | File | Description |
 |------|-------------|
-| `sqli-app.py` | Flask application with vulnerable login |
+| `app.py` | Flask application with vulnerable login |
 | `templates/sqli-login.html` | Login page with hints |
 | `templates/sqli-register.html` | User registration page |
 | `templates/sqli-dashboard.html` | Dashboard (green for users, red for admin) |
-| `sqli-requirements.txt` | Python dependencies |
-| `sqli-README.md` | This documentation |
+| `requirements.txt` | Python dependencies |
+| `README.md` | This documentation |
 | `sqli-database.db` | SQLite database (auto-created) |
 
 ## Admin Credentials
@@ -158,17 +158,19 @@ For testing legitimate login:
 - Username: `admin`
 - Password: `EC521isCool`
 
-## All Demos in This Repository
+## All Demos in This Series
 
-| Demo | Port | Description |
-|------|------|-------------|
-| Cookie Security | 5000 | Cookie manipulation attack |
-| **SQL Injection** | 5001 | Classic SQL injection in login form (this demo) |
-| Blind SQL Injection | 5002 | Boolean-based blind SQL injection |
-| Secure SQL | 5003 | SQL injection prevention with prepared statements |
-| Reflected XSS | 5004 | Cross-site scripting via search |
-| XSS Encoded | 5005 | Output encoding only |
-| XSS + CSP | 5006 | Full protection with CSP |
+| Folder | Port | Description |
+|--------|------|-------------|
+| cookie-demo | 5000 | Cookie manipulation attack |
+| **sqli-classic** | 5001 | Classic SQL injection in login form (this demo) |
+| sqli-blind | 5002 | Boolean-based blind SQL injection |
+| sqli-secure | 5003 | SQL injection prevention with prepared statements |
+| xss-reflected | 5004 | Cross-site scripting via search |
+| xss-encoded | 5005 | Output encoding only |
+| xss-csp | 5006 | Full protection with CSP |
+| xss-stored | 5007 | Stored XSS in notes app |
+| xss-dom | 5008 | DOM-based XSS |
 
 ## License
 

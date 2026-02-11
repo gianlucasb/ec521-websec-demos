@@ -6,7 +6,7 @@ A demonstration of how to **prevent** SQL injection using parameterized queries 
 
 This is the secure version of the SQL injection demo. It uses parameterized queries (prepared statements) to safely handle user input, making SQL injection attacks impossible.
 
-**Compare with:** Run `sqli-app.py` (port 5001) side-by-side to see the difference between vulnerable and secure implementations.
+**Compare with:** Run `sqli-classic` (port 5001) side-by-side to see the difference between vulnerable and secure implementations.
 
 ## Learning Objectives
 
@@ -24,13 +24,13 @@ This is the secure version of the SQL injection demo. It uses parameterized quer
 ### Installation
 
 ```bash
-pip install -r sqli-secure-requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running the App
 
 ```bash
-python sqli-secure-app.py
+python app.py
 ```
 
 Visit `http://localhost:5003` in your browser.
@@ -127,17 +127,17 @@ Database user should only have necessary permissions (no DROP, no schema changes
 
 | File | Description |
 |------|-------------|
-| `sqli-secure-app.py` | Flask app with parameterized queries |
+| `app.py` | Flask app with parameterized queries |
 | `templates/sqli-secure-login.html` | Login page explaining the protection |
 | `templates/sqli-secure-register.html` | Registration page |
 | `templates/sqli-secure-dashboard.html` | Dashboard |
-| `sqli-secure-requirements.txt` | Python dependencies |
-| `sqli-secure-README.md` | This documentation |
+| `requirements.txt` | Python dependencies |
+| `README.md` | This documentation |
 | `sqli-secure-database.db` | SQLite database (auto-created) |
 
 ## Comparison: Vulnerable vs Secure
 
-| Aspect | Vulnerable (`sqli-app.py`) | Secure (`sqli-secure-app.py`) |
+| Aspect | Vulnerable (`sqli-classic`) | Secure (`sqli-secure`) |
 |--------|---------------------------|------------------------------|
 | Port | 5001 | 5003 |
 | Query method | String concatenation | Parameterized queries |
@@ -151,17 +151,19 @@ For legitimate login testing:
 - Username: `admin`
 - Password: `EC521isCool`
 
-## All Demos in This Repository
+## All Demos in This Series
 
-| Demo | Port | Description |
-|------|------|-------------|
-| Cookie Security | 5000 | Cookie manipulation attack |
-| SQL Injection | 5001 | Classic SQL injection in login form |
-| Blind SQL Injection | 5002 | Boolean-based blind SQL injection |
-| **Secure SQL** | 5003 | SQL injection prevention with prepared statements (this demo) |
-| Reflected XSS | 5004 | Cross-site scripting via search |
-| XSS Encoded | 5005 | Output encoding only |
-| XSS + CSP | 5006 | Full protection with CSP |
+| Folder | Port | Description |
+|--------|------|-------------|
+| cookie-demo | 5000 | Cookie manipulation attack |
+| sqli-classic | 5001 | Classic SQL injection in login form |
+| sqli-blind | 5002 | Boolean-based blind SQL injection |
+| **sqli-secure** | 5003 | SQL injection prevention with prepared statements (this demo) |
+| xss-reflected | 5004 | Cross-site scripting via search |
+| xss-encoded | 5005 | Output encoding only |
+| xss-csp | 5006 | Full protection with CSP |
+| xss-stored | 5007 | Stored XSS in notes app |
+| xss-dom | 5008 | DOM-based XSS |
 
 ## License
 

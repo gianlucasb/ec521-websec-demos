@@ -7,10 +7,10 @@ A hands-on demonstration of DOM-based Cross-Site Scripting (XSS) vulnerabilities
 This demo teaches students how **DOM-based XSS** attacks work. Unlike reflected or stored XSS, the vulnerability exists entirely in client-side JavaScript. The malicious payload never reaches the server - it stays in the browser, making it invisible to server-side security measures.
 
 **See also:**
-- **Reflected XSS** (port 5004): `xss-reflected-app.py` - Server reflects payload
-- **Stored XSS** (port 5007): `xss-stored-app.py` - Payload stored in database
-- **Encoded** (port 5005): `xss-encoded-app.py` - Output encoding defense
-- **CSP + HttpOnly** (port 5006): `xss-csp-app.py` - Full protection
+- **Reflected XSS** (port 5004): `xss-reflected` - Server reflects payload
+- **Stored XSS** (port 5007): `xss-stored` - Payload stored in database
+- **Encoded** (port 5005): `xss-encoded` - Output encoding defense
+- **CSP + HttpOnly** (port 5006): `xss-csp` - Full protection
 
 ## Learning Objectives
 
@@ -29,13 +29,13 @@ This demo teaches students how **DOM-based XSS** attacks work. Unlike reflected 
 ### Installation
 
 ```bash
-pip install -r xss-dom-requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running the App
 
 ```bash
-python xss-dom-app.py
+python app.py
 ```
 
 Visit `http://localhost:5008` in your browser.
@@ -227,9 +227,10 @@ Modern frameworks like React escape by default:
 
 | File | Description |
 |------|-------------|
-| `xss-dom-app.py` | Flask app serving the vulnerable page |
-| `xss-dom-requirements.txt` | Python dependencies |
-| `xss-dom-README.md` | This documentation |
+| `app.py` | Flask app serving the vulnerable page |
+| `static/terrier.png` | Logo image |
+| `requirements.txt` | Python dependencies |
+| `README.md` | This documentation |
 
 ## Try These Payloads
 
@@ -276,19 +277,19 @@ This is an important lesson: XSS payloads depend on context. What works for refl
 5. Check the server terminal - no payload logged
 6. Yet the XSS still executes
 
-## All Demos in This Repository
+## All Demos in This Series
 
-| Demo | Port | Description |
-|------|------|-------------|
-| Cookie Security | 5000 | Cookie manipulation attack |
-| SQL Injection | 5001 | Classic SQL injection in login form |
-| Blind SQL Injection | 5002 | Boolean-based blind SQL injection |
-| Secure SQL | 5003 | SQL injection prevention with prepared statements |
-| Reflected XSS | 5004 | Cross-site scripting via search (reflected) |
-| XSS Encoded | 5005 | Output encoding only |
-| XSS + CSP | 5006 | Full protection with CSP |
-| Stored XSS | 5007 | Stored XSS in note-taking app |
-| **DOM XSS** | 5008 | DOM-based XSS via URL fragment (this demo) |
+| Folder | Port | Description |
+|--------|------|-------------|
+| cookie-demo | 5000 | Cookie manipulation attack |
+| sqli-classic | 5001 | Classic SQL injection in login form |
+| sqli-blind | 5002 | Boolean-based blind SQL injection |
+| sqli-secure | 5003 | SQL injection prevention with prepared statements |
+| xss-reflected | 5004 | Cross-site scripting via search (reflected) |
+| xss-encoded | 5005 | Output encoding only |
+| xss-csp | 5006 | Full protection with CSP |
+| xss-stored | 5007 | Stored XSS in note-taking app |
+| **xss-dom** | 5008 | DOM-based XSS via URL fragment (this demo) |
 
 ## License
 

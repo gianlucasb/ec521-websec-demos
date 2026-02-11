@@ -7,8 +7,8 @@ A hands-on demonstration of reflected Cross-Site Scripting (XSS) vulnerabilities
 This demo teaches students how reflected XSS attacks work by providing a deliberately vulnerable search engine. The search query is reflected back to the page without proper sanitization, allowing attackers to inject malicious JavaScript.
 
 **See also:**
-- **Encoded** (port 5005): `xss-encoded-app.py` - Output encoding only
-- **CSP + HttpOnly** (port 5006): `xss-csp-app.py` - Full protection
+- **Encoded** (port 5005): `xss-encoded` - Output encoding only
+- **CSP + HttpOnly** (port 5006): `xss-csp` - Full protection
 
 ## Learning Objectives
 
@@ -27,13 +27,13 @@ This demo teaches students how reflected XSS attacks work by providing a deliber
 ### Installation
 
 ```bash
-pip install -r xss-reflected-requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running the App
 
 ```bash
-python xss-reflected-app.py
+python app.py
 ```
 
 Visit `http://localhost:5004` in your browser.
@@ -189,9 +189,10 @@ XSS can be used to:
 
 | File | Description |
 |------|-------------|
-| `xss-reflected-app.py` | Flask app with reflected XSS vulnerability |
-| `xss-reflected-requirements.txt` | Python dependencies |
-| `xss-reflected-README.md` | This documentation |
+| `app.py` | Flask app with reflected XSS vulnerability |
+| `static/terrier.png` | Logo image |
+| `requirements.txt` | Python dependencies |
+| `README.md` | This documentation |
 
 ## Secret Cookie
 
@@ -210,17 +211,19 @@ The app sets a cookie `secret=s3cr3t` without the HttpOnly flag, making it acces
 | `<marquee onstart=alert('XSS')>` | Marquee start event |
 | `"><script>alert('XSS')</script>` | Break out of attribute |
 
-## All Demos in This Repository
+## All Demos in This Series
 
-| Demo | Port | Description |
-|------|------|-------------|
-| Cookie Security | 5000 | Cookie manipulation attack |
-| SQL Injection | 5001 | Classic SQL injection in login form |
-| Blind SQL Injection | 5002 | Boolean-based blind SQL injection |
-| Secure SQL | 5003 | SQL injection prevention with prepared statements |
-| **Reflected XSS** | 5004 | Cross-site scripting via search (this demo) |
-| XSS Encoded | 5005 | Output encoding only |
-| XSS + CSP | 5006 | Full protection with CSP |
+| Folder | Port | Description |
+|--------|------|-------------|
+| cookie-demo | 5000 | Cookie manipulation attack |
+| sqli-classic | 5001 | Classic SQL injection in login form |
+| sqli-blind | 5002 | Boolean-based blind SQL injection |
+| sqli-secure | 5003 | SQL injection prevention with prepared statements |
+| **xss-reflected** | 5004 | Cross-site scripting via search (this demo) |
+| xss-encoded | 5005 | Output encoding only |
+| xss-csp | 5006 | Full protection with CSP |
+| xss-stored | 5007 | Stored XSS in notes app |
+| xss-dom | 5008 | DOM-based XSS |
 
 ## License
 

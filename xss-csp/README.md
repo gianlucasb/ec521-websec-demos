@@ -28,13 +28,13 @@ This demo shows how **Content Security Policy (CSP)** provides an additional lay
 ### Installation
 
 ```bash
-pip install -r xss-csp-requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Running the App
 
 ```bash
-python xss-csp-app.py
+python app.py
 ```
 
 Visit `http://localhost:5006` in your browser.
@@ -125,9 +125,10 @@ Even if XSS somehow executed:
 
 | File | Description |
 |------|-------------|
-| `xss-csp-app.py` | Flask app with full CSP protection |
-| `xss-csp-requirements.txt` | Python dependencies |
-| `xss-csp-README.md` | This documentation |
+| `app.py` | Flask app with full CSP protection |
+| `static/terrier.png` | Logo image |
+| `requirements.txt` | Python dependencies |
+| `README.md` | This documentation |
 
 ## Comparison: All Three Versions
 
@@ -142,17 +143,19 @@ Even if XSS somehow executed:
 | Cookie protected | ❌ | ❌ | ✅ |
 | Defense in depth | ❌ | ❌ | ✅ |
 
-## All Demos in This Repository
+## All Demos in This Series
 
-| Demo | Port | Description |
-|------|------|-------------|
-| Cookie Security | 5000 | Cookie manipulation attack |
-| SQL Injection | 5001 | Classic SQL injection in login form |
-| Blind SQL Injection | 5002 | Boolean-based blind SQL injection |
-| Secure SQL | 5003 | SQL injection prevention with prepared statements |
-| Reflected XSS | 5004 | Cross-site scripting via search (vulnerable) |
-| XSS Encoded | 5005 | Output encoding only |
-| **XSS + CSP** | 5006 | Full protection with CSP (this demo) |
+| Folder | Port | Description |
+|--------|------|-------------|
+| cookie-demo | 5000 | Cookie manipulation attack |
+| sqli-classic | 5001 | Classic SQL injection in login form |
+| sqli-blind | 5002 | Boolean-based blind SQL injection |
+| sqli-secure | 5003 | SQL injection prevention with prepared statements |
+| xss-reflected | 5004 | Cross-site scripting via search (vulnerable) |
+| xss-encoded | 5005 | Output encoding only |
+| **xss-csp** | 5006 | Full protection with CSP (this demo) |
+| xss-stored | 5007 | Stored XSS in notes app |
+| xss-dom | 5008 | DOM-based XSS |
 
 ## License
 
