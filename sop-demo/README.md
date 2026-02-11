@@ -43,6 +43,8 @@ This starts **both** servers automatically. Visit `http://localhost:5009` in you
 
 ## The Demo
 
+> **Note:** The "SOP OFF" mode is a simulation. Browsers always enforce the Same-Origin Policy - it cannot be disabled. This demo illustrates the *concept* of what would happen without SOP by having the parent page voluntarily share its data.
+
 ### What You'll See
 
 1. **ShopMart Checkout Page**: A realistic shopping cart with credit card payment form
@@ -93,33 +95,53 @@ Without the Same-Origin Policy:
 
 ## How This Demo Works
 
-### SOP ON Mode (Real Behavior)
+> **Important:** This demo does NOT actually disable the browser's Same-Origin Policy.
+> The SOP is always enforced by the browser and cannot be turned off. The "SOP OFF" mode
+> is a **simulation** that illustrates what *would* be possible if the SOP didn't exist.
 
-When SOP is enabled, the iframes try to access `parent.document`:
+### SOP ON Mode (Real Browser Behavior)
+
+When the toggle is ON, each iframe attempts to directly access the parent's DOM:
 
 ```javascript
 // Same-origin iframe (deals.html on port 5009) - SUCCEEDS
 const cardNumber = parent.document.getElementById('card-number').value;
 
-// Cross-origin iframe (banner.html on port 5010) - BLOCKED
+// Cross-origin iframe (banner.html on port 5010) - BLOCKED BY BROWSER
 const cardNumber = parent.document.getElementById('card-number').value;
 // Throws: SecurityError: Blocked a frame with origin "http://localhost:5010"
 // from accessing a cross-origin frame.
 ```
 
-### SOP OFF Mode (Simulated)
+This is the **real** Same-Origin Policy in action. The browser blocks the cross-origin iframe.
 
-We can't actually disable the Same-Origin Policy in a browser. Instead, we simulate it:
+### SOP OFF Mode (Simulation Only)
+
+When the toggle is OFF, we **simulate** a world without SOP. Since we can't actually disable the browser's security, we fake it:
 
 ```javascript
-// Parent sends payment data to ALL iframes via postMessage
-iframe.contentWindow.postMessage({
+// The PARENT page voluntarily sends its data to all iframes
+adIframe.contentWindow.postMessage({
     mode: 'sop-off',
     stolenData: paymentData  // Card number, CVV, expiry, etc.
 }, '*');
 ```
 
-This simulates what a malicious ad script could do if there was no SOP restriction.
+The ad iframe receives this data via a `message` event listener:
+
+```javascript
+// In the ad iframe
+window.addEventListener('message', (event) => {
+    if (event.data.mode === 'sop-off') {
+        // Parent handed us the data - display "STOLEN!"
+        const cardNumber = event.data.stolenData.cardNumber;
+    }
+});
+```
+
+**What this simulates:** If SOP didn't exist, the ad could directly read `parent.document` and steal any data. We simulate this by having the parent "give away" its data to everyone, which is functionally equivalent to having no security boundary.
+
+**What actually happens:** The parent uses `postMessage()` (a legitimate cross-origin communication API) to explicitly share data. In real life, a page would never do this with sensitive data. The browser's SOP remains fully enforced throughout.
 
 ## Security Concepts Demonstrated
 
