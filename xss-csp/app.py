@@ -3,6 +3,7 @@ from flask import Flask, request, render_template_string, make_response
 app = Flask(__name__)
 
 # HTML template with BOTH output encoding AND CSP protection
+# Now with toggles to demonstrate each protection layer
 SEARCH_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -222,6 +223,131 @@ SEARCH_TEMPLATE = """
             text-decoration: underline;
         }
 
+        .toggles {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .toggle-group label {
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #2e7d32;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .status-on {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .status-off {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .current-status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .current-status h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .status-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .warning-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3e0;
+            border-radius: 10px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .warning-box h4 {
+            color: #e65100;
+            margin-bottom: 5px;
+        }
+
+        .warning-box p {
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        .try-this {
+            background: #e3f2fd;
+            border-left-color: #1976d2;
+        }
+
+        .try-this h4 {
+            color: #1565c0;
+        }
+
     </style>
 </head>
 <body>
@@ -231,15 +357,49 @@ SEARCH_TEMPLATE = """
         <p class="subtitle">Full Protection - CSP + Encoding + HttpOnly</p>
 
         <div class="badge">
+            {% if csp_enabled and httponly_enabled %}
             <span>🛡️ FULL PROTECTION - DEFENSE IN DEPTH</span>
+            {% elif csp_enabled or httponly_enabled %}
+            <span style="background: #fff3e0; border-color: #ff9800; color: #e65100;">⚠️ PARTIAL PROTECTION</span>
+            {% else %}
+            <span style="background: #ffebee; border-color: #c62828; color: #c62828;">🚨 ENCODING ONLY - NO EXTRA PROTECTION</span>
+            {% endif %}
         </div>
 
-        <form method="GET" action="/">
+        <form method="GET" action="/" id="searchForm">
+            <div class="toggles">
+                <div class="toggle-group">
+                    <label for="csp">CSP Header</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="csp" name="csp" value="1" {{ 'checked' if csp_enabled else '' }} onchange="document.getElementById('searchForm').submit()">
+                        <span class="toggle-slider"></span>
+                    </div>
+                    <span class="{{ 'status-on' if csp_enabled else 'status-off' }}">{{ 'ON' if csp_enabled else 'OFF' }}</span>
+                </div>
+                <div class="toggle-group">
+                    <label for="httponly">HttpOnly Cookie</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="httponly" name="httponly" value="1" {{ 'checked' if httponly_enabled else '' }} onchange="document.getElementById('searchForm').submit()">
+                        <span class="toggle-slider"></span>
+                    </div>
+                    <span class="{{ 'status-on' if httponly_enabled else 'status-off' }}">{{ 'ON' if httponly_enabled else 'OFF' }}</span>
+                </div>
+            </div>
+
             <div class="search-box">
                 <input type="text" name="q" placeholder="Enter your search query..." value="{{ query if query else '' }}">
                 <button type="submit">Search</button>
             </div>
         </form>
+
+        <div class="current-status">
+            <h4>Current Protection Status</h4>
+            <div class="status-indicators">
+                <span>Output Encoding: <span class="status-on">✓ ON</span></span>
+                <span>CSP: <span class="{{ 'status-on' if csp_enabled else 'status-off' }}">{{ '✓ ON' if csp_enabled else '✗ OFF' }}</span></span>
+                <span>HttpOnly: <span class="{{ 'status-on' if httponly_enabled else 'status-off' }}">{{ '✓ ON' if httponly_enabled else '✗ OFF' }}</span></span>
+            </div>
+        </div>
 
         {% if query %}
         <div class="results-box">
@@ -261,36 +421,29 @@ SEARCH_TEMPLATE = """
                 <tr>
                     <th>Protection</th>
                     <th>What it does</th>
-                    <th>Unsanitized</th>
-                    <th>Encoded</th>
-                    <th>CSP+HttpOnly</th>
+                    <th>Current</th>
                 </tr>
                 <tr>
                     <td><strong>Output Encoding</strong></td>
                     <td>Escapes HTML entities</td>
-                    <td class="cross">✗</td>
-                    <td class="check">✓</td>
-                    <td class="check">✓</td>
+                    <td class="check">✓ Always ON</td>
                 </tr>
                 <tr>
                     <td><strong>CSP Header</strong></td>
                     <td>Blocks inline scripts</td>
-                    <td class="cross">✗</td>
-                    <td class="cross">✗</td>
-                    <td class="check">✓</td>
+                    <td class="{{ 'check' if csp_enabled else 'cross' }}">{{ '✓ ON' if csp_enabled else '✗ OFF' }}</td>
                 </tr>
                 <tr>
                     <td><strong>HttpOnly Cookie</strong></td>
                     <td>Hides cookie from JS</td>
-                    <td class="cross">✗</td>
-                    <td class="cross">✗</td>
-                    <td class="check">✓</td>
+                    <td class="{{ 'check' if httponly_enabled else 'cross' }}">{{ '✓ ON' if httponly_enabled else '✗ OFF' }}</td>
                 </tr>
             </table>
         </div>
 
         <div class="info-box" style="margin-top: 20px;">
             <h3>📋 CSP Header</h3>
+            {% if csp_enabled %}
             <p>The server sends this Content-Security-Policy header:</p>
             <div class="code-block">
 <code>Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'</code>
@@ -307,7 +460,58 @@ SEARCH_TEMPLATE = """
 <code>Refused to execute inline event handler because it violates
 Content Security Policy directive: "script-src 'self'"</code>
             </div>
+            {% else %}
+            <p><span class="status-off">CSP is currently disabled.</span></p>
+            <p style="margin-top: 10px;">
+                Without CSP, inline event handlers can execute. Try:
+                <br>• <code>javascript:alert(document.cookie)</code> (then click "Share this search")
+                <br><br>
+                The <code>javascript:</code> URL will execute because there's no CSP to block it!
+            </p>
+            {% endif %}
         </div>
+
+        <div class="info-box" style="margin-top: 20px;">
+            <h3>🍪 HttpOnly Cookie</h3>
+            {% if httponly_enabled %}
+            <p>The <code>secret</code> cookie has the <code>HttpOnly</code> flag set.</p>
+            <p style="margin-top: 10px;">
+                Open the browser console (F12) and type:
+            </p>
+            <div class="code-block">
+<code>document.cookie</code>
+            </div>
+            <p style="margin-top: 10px;">
+                The <code>secret</code> cookie is <strong>not visible</strong> to JavaScript!
+                Even if XSS somehow executed, it couldn't steal the session cookie.
+            </p>
+            {% else %}
+            <p><span class="status-off">HttpOnly is currently disabled.</span></p>
+            <p style="margin-top: 10px;">
+                Open the browser console (F12) and type:
+            </p>
+            <div class="code-block">
+<code>document.cookie</code>
+            </div>
+            <p style="margin-top: 10px;">
+                You can see <code>secret=s3cr3t</code>! An XSS attack could steal this cookie.
+            </p>
+            {% endif %}
+        </div>
+
+        {% if not csp_enabled %}
+        <div class="warning-box try-this">
+            <h4>💡 Try This (CSP is OFF)</h4>
+            <p>
+                Search for <code>javascript:alert(document.cookie)</code> then click the "Share this search" link.
+                {% if httponly_enabled %}
+                The alert will show an empty string because HttpOnly protects the cookie.
+                {% else %}
+                The alert will show <code>secret=s3cr3t</code> - the cookie is exposed!
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
 
         <div class="info-box" style="margin-top: 20px;">
             <h3>🔒 Why This Matters</h3>
@@ -333,22 +537,33 @@ Content Security Policy directive: "script-src 'self'"</code>
 def search():
     query = request.args.get("q", "")
 
+    # Toggle states - default to ON for full protection
+    csp_enabled = request.args.get("csp", "1") == "1"
+    httponly_enabled = request.args.get("httponly", "1") == "1"
+
     if query:
         print(f"[DEBUG] Search query: {query}")
+        print(f"[DEBUG] CSP: {'ON' if csp_enabled else 'OFF'}, HttpOnly: {'ON' if httponly_enabled else 'OFF'}")
 
-    # FULLY SECURE: Encoding + CSP + HttpOnly
-    response = make_response(render_template_string(SEARCH_TEMPLATE, query=query))
+    # Render template with toggle states
+    response = make_response(render_template_string(
+        SEARCH_TEMPLATE,
+        query=query,
+        csp_enabled=csp_enabled,
+        httponly_enabled=httponly_enabled
+    ))
 
-    # HttpOnly cookie - JavaScript cannot access it
-    response.set_cookie("secret", "s3cr3t", httponly=True)
+    # Cookie - HttpOnly flag controlled by toggle
+    response.set_cookie("secret", "s3cr3t", httponly=httponly_enabled)
 
-    # Content Security Policy - blocks ALL inline scripts
-    response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; "
-        "script-src 'self'; "
-        "style-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data:; "
-    )
+    # Content Security Policy - controlled by toggle
+    if csp_enabled:
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+        )
 
     return response
 
