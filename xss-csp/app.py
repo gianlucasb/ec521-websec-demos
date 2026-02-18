@@ -254,9 +254,12 @@ SEARCH_TEMPLATE = """
         }
 
         .toggle-switch input {
+            position: absolute;
             opacity: 0;
-            width: 0;
-            height: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 1;
         }
 
         .toggle-slider {
@@ -537,9 +540,9 @@ Content Security Policy directive: "script-src 'self'"</code>
 def search():
     query = request.args.get("q", "")
 
-    # Toggle states - default to ON for full protection
-    csp_enabled = request.args.get("csp", "1") == "1"
-    httponly_enabled = request.args.get("httponly", "1") == "1"
+    # Toggle states - default to OFF to show vulnerability
+    csp_enabled = request.args.get("csp", "0") == "1"
+    httponly_enabled = request.args.get("httponly", "0") == "1"
 
     if query:
         print(f"[DEBUG] Search query: {query}")
