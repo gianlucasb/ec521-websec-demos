@@ -187,6 +187,174 @@
         .code-block .comment {
             color: #78dce8;
         }
+
+        /* Toggle switch styles */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .toggle-label {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        .toggle-label.active {
+            font-weight: 600;
+        }
+
+        .toggle-label.vulnerable {
+            color: #e74c3c;
+        }
+
+        .toggle-label.secure {
+            color: #40c057;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e74c3c;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #40c057;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Query visualization panel */
+        .query-panel {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 2px solid;
+        }
+
+        .query-panel.vulnerable {
+            border-color: #e74c3c;
+        }
+
+        .query-panel.secure {
+            border-color: #40c057;
+        }
+
+        .query-panel h3 {
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .query-panel.vulnerable h3 {
+            color: #e74c3c;
+        }
+
+        .query-panel.secure h3 {
+            color: #40c057;
+        }
+
+        .query-row {
+            margin-bottom: 12px;
+        }
+
+        .query-row-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .query-row-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .query-row-value.vulnerable {
+            color: #ff6b6b;
+        }
+
+        .query-row-value.secure {
+            color: #69db7c;
+        }
+
+        .injection-highlight {
+            background: rgba(231, 76, 60, 0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #ff6b6b;
+        }
+
+        .param-highlight {
+            background: rgba(64, 192, 87, 0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #69db7c;
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .mode-badge.vulnerable {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .mode-badge.secure {
+            background: rgba(64, 192, 87, 0.2);
+            color: #40c057;
+            border: 1px solid #40c057;
+        }
     </style>
 </head>
 <body>
@@ -196,7 +364,21 @@
         <p class="subtitle">Protected with Prepared Statements</p>
 
         <div class="secure-badge">
+            {% if prepared_enabled %}
             <span>🔒 SQL INJECTION PROTECTED</span>
+            {% else %}
+            <span style="background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c;">⚠️ VULNERABLE TO SQL INJECTION</span>
+            {% endif %}
+        </div>
+
+        <!-- Toggle Switch -->
+        <div class="toggle-container">
+            <span class="toggle-label vulnerable {{ 'active' if not prepared_enabled else '' }}">Vulnerable</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="preparedToggle" {{ 'checked' if prepared_enabled else '' }} onchange="togglePrepared()">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label secure {{ 'active' if prepared_enabled else '' }}">Prepared Statements</span>
         </div>
 
         <div class="login-box">
@@ -204,7 +386,9 @@
             <div class="error">{{ error }}</div>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+                <input type="hidden" name="prepared" id="preparedHidden" value="{{ '1' if prepared_enabled else '0' }}">
+
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" placeholder="Enter username" required>
@@ -217,6 +401,53 @@
 
                 <button type="submit">Login</button>
             </form>
+
+            {% if query_info %}
+            <!-- Query Visualization Panel -->
+            <div class="query-panel {{ query_info.mode }}">
+                <h3>
+                    {% if query_info.mode == 'vulnerable' %}
+                    ⚠️ Query Executed (String Concatenation)
+                    <span class="mode-badge vulnerable">VULNERABLE</span>
+                    {% else %}
+                    🛡️ Query Executed (Parameterized)
+                    <span class="mode-badge secure">SECURE</span>
+                    {% endif %}
+                </h3>
+
+                <div class="query-row">
+                    <div class="query-row-label">Your Input</div>
+                    <div class="query-row-value">Username: {{ query_info.username }}<br>Password: {{ query_info.password }}</div>
+                </div>
+
+                {% if query_info.mode == 'vulnerable' %}
+                <div class="query-row">
+                    <div class="query-row-label">Query Template</div>
+                    <div class="query-row-value vulnerable">SELECT * FROM users WHERE username = '<span class="injection-highlight">{input}</span>' AND password = '<span class="injection-highlight">{input}</span>'</div>
+                </div>
+
+                <div class="query-row">
+                    <div class="query-row-label">Actual Query Sent to Database</div>
+                    <div class="query-row-value vulnerable">{{ query_info.effective }}</div>
+                </div>
+                {% else %}
+                <div class="query-row">
+                    <div class="query-row-label">Query Template</div>
+                    <div class="query-row-value secure">SELECT * FROM users WHERE username = <span class="param-highlight">?</span> AND password = <span class="param-highlight">?</span></div>
+                </div>
+
+                <div class="query-row">
+                    <div class="query-row-label">Parameters (Safely Escaped)</div>
+                    <div class="query-row-value secure">(<span class="param-highlight">'{{ query_info.username }}'</span>, <span class="param-highlight">'{{ query_info.password }}'</span>)</div>
+                </div>
+
+                <div class="query-row">
+                    <div class="query-row-label">How It's Processed</div>
+                    <div class="query-row-value secure">{{ query_info.effective }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
 
             <p class="register-link">
                 Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
@@ -245,5 +476,14 @@ cursor.execute(query, (username, password))</code>
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePrepared() {
+            const checkbox = document.getElementById('preparedToggle');
+            const prepared = checkbox.checked ? '1' : '0';
+            // Update URL to reflect toggle state
+            window.location.href = '{{ url_for("login") }}?prepared=' + prepared;
+        }
+    </script>
 </body>
 </html>

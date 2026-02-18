@@ -60,39 +60,75 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Login page using SECURE parameterized queries."""
+    """Login page with toggle between vulnerable and secure query modes."""
     error = None
+    query_info = None
+
+    # Toggle: prepared=1 means use parameterized queries (secure)
+    # Default is prepared=0 (vulnerable) to demonstrate the difference
+    prepared_enabled = request.args.get("prepared", "0") == "1"
 
     if request.method == "POST":
         username = request.form.get("username", "")
         password = request.form.get("password", "")
+        # Preserve toggle state from form
+        prepared_enabled = request.form.get("prepared", "0") == "1"
 
         db = get_db()
         cursor = db.cursor()
 
-        # SECURE: Using parameterized query with placeholders
-        # The ? placeholders are replaced safely by the database driver
-        # User input is NEVER concatenated into the query string
-        query = "SELECT * FROM users WHERE username = ? AND password = ?"
+        if prepared_enabled:
+            # SECURE: Using parameterized query with placeholders
+            query_template = "SELECT * FROM users WHERE username = ? AND password = ?"
+            query_display = query_template
+            query_effective = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
 
-        print(f"[DEBUG] Executing parameterized query: {query}")
-        print(f"[DEBUG] Parameters: username={username!r}, password={password!r}")
+            print(f"[DEBUG] SECURE MODE - Parameterized query: {query_template}")
+            print(f"[DEBUG] Parameters: username={username!r}, password={password!r}")
 
-        try:
-            # Pass parameters as a tuple - they are escaped automatically
-            cursor.execute(query, (username, password))
-            user = cursor.fetchone()
+            query_info = {
+                "mode": "secure",
+                "template": query_template,
+                "effective": "Parameters are safely escaped by the database driver",
+                "username": username,
+                "password": password,
+            }
 
-            if user:
-                session["logged_in"] = True
-                session["username"] = user["username"]
-                return redirect(url_for("dashboard"))
-            else:
-                error = "Invalid username or password"
-        except sqlite3.Error as e:
-            error = f"Database error: {e}"
+            try:
+                cursor.execute(query_template, (username, password))
+                user = cursor.fetchone()
+            except sqlite3.Error as e:
+                error = f"Database error: {e}"
+                user = None
+        else:
+            # VULNERABLE: String concatenation (for demonstration)
+            query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
 
-    return render_template("sqli-secure-login.html", error=error)
+            print(f"[DEBUG] VULNERABLE MODE - Concatenated query: {query}")
+
+            query_info = {
+                "mode": "vulnerable",
+                "template": "SELECT * FROM users WHERE username = '{input}' AND password = '{input}'",
+                "effective": query,
+                "username": username,
+                "password": password,
+            }
+
+            try:
+                cursor.execute(query)
+                user = cursor.fetchone()
+            except sqlite3.Error as e:
+                error = f"Database error: {e}"
+                user = None
+
+        if user and not error:
+            session["logged_in"] = True
+            session["username"] = user["username"]
+            return redirect(url_for("dashboard"))
+        elif not error:
+            error = "Invalid username or password"
+
+    return render_template("sqli-secure-login.html", error=error, prepared_enabled=prepared_enabled, query_info=query_info)
 
 
 @app.route("/register", methods=["GET", "POST"])
