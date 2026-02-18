@@ -82,16 +82,6 @@ This transforms the query into:
 SELECT * FROM users WHERE username = '' OR '1'='1' AND password = '' OR '1'='1'
 ```
 
-**Method 3: Comment out password check**
-- Username: `admin'--`
-- Password: `anything`
-
-This transforms the query into:
-```sql
-SELECT * FROM users WHERE username = 'admin'--' AND password = 'anything'
-```
-(Everything after `--` is treated as a comment)
-
 </details>
 
 ## Security Vulnerabilities Demonstrated
