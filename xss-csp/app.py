@@ -360,17 +360,25 @@ SEARCH_TEMPLATE = """
         <p class="subtitle">Full Protection - CSP + Encoding + HttpOnly</p>
 
         <div class="badge">
-            {% if csp_enabled and httponly_enabled %}
+            {% if encoding_enabled and csp_enabled and httponly_enabled %}
             <span>🛡️ FULL PROTECTION - DEFENSE IN DEPTH</span>
-            {% elif csp_enabled or httponly_enabled %}
+            {% elif encoding_enabled or csp_enabled or httponly_enabled %}
             <span style="background: #fff3e0; border-color: #ff9800; color: #e65100;">⚠️ PARTIAL PROTECTION</span>
             {% else %}
-            <span style="background: #ffebee; border-color: #c62828; color: #c62828;">🚨 ENCODING ONLY - NO EXTRA PROTECTION</span>
+            <span style="background: #ffebee; border-color: #c62828; color: #c62828;">🚨 NO PROTECTION - FULLY VULNERABLE</span>
             {% endif %}
         </div>
 
         <form method="GET" action="/" id="searchForm">
             <div class="toggles">
+                <div class="toggle-group">
+                    <label for="encoding">Output Encoding</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="encoding" name="encoding" value="1" {{ 'checked' if encoding_enabled else '' }} onchange="document.getElementById('searchForm').submit()">
+                        <span class="toggle-slider"></span>
+                    </div>
+                    <span class="{{ 'status-on' if encoding_enabled else 'status-off' }}">{{ 'ON' if encoding_enabled else 'OFF' }}</span>
+                </div>
                 <div class="toggle-group">
                     <label for="csp">CSP Header</label>
                     <div class="toggle-switch">
@@ -398,7 +406,7 @@ SEARCH_TEMPLATE = """
         <div class="current-status">
             <h4>Current Protection Status</h4>
             <div class="status-indicators">
-                <span>Output Encoding: <span class="status-on">✓ ON</span></span>
+                <span>Encoding: <span class="{{ 'status-on' if encoding_enabled else 'status-off' }}">{{ '✓ ON' if encoding_enabled else '✗ OFF' }}</span></span>
                 <span>CSP: <span class="{{ 'status-on' if csp_enabled else 'status-off' }}">{{ '✓ ON' if csp_enabled else '✗ OFF' }}</span></span>
                 <span>HttpOnly: <span class="{{ 'status-on' if httponly_enabled else 'status-off' }}">{{ '✓ ON' if httponly_enabled else '✗ OFF' }}</span></span>
             </div>
@@ -407,8 +415,13 @@ SEARCH_TEMPLATE = """
         {% if query %}
         <div class="results-box">
             <p class="results-header">Showing results for:</p>
-            <!-- FULLY SECURE: Encoding + CSP + HttpOnly cookie -->
+            {% if encoding_enabled %}
+            <!-- SECURE: Output encoding escapes HTML -->
             <p class="query-display">{{ query }}</p>
+            {% else %}
+            <!-- VULNERABLE: No encoding - raw HTML injection possible -->
+            <p class="query-display">{{ query | safe }}</p>
+            {% endif %}
             <p class="no-results">No results found. Try a different search term.</p>
             <!-- CSP blocks javascript: URLs even in href attributes -->
             <p class="share-link">📤 <a href="{{ query }}">Share this search</a></p>
@@ -429,7 +442,7 @@ SEARCH_TEMPLATE = """
                 <tr>
                     <td><strong>Output Encoding</strong></td>
                     <td>Escapes HTML entities</td>
-                    <td class="check">✓ Always ON</td>
+                    <td class="{{ 'check' if encoding_enabled else 'cross' }}">{{ '✓ ON' if encoding_enabled else '✗ OFF' }}</td>
                 </tr>
                 <tr>
                     <td><strong>CSP Header</strong></td>
@@ -442,6 +455,32 @@ SEARCH_TEMPLATE = """
                     <td class="{{ 'check' if httponly_enabled else 'cross' }}">{{ '✓ ON' if httponly_enabled else '✗ OFF' }}</td>
                 </tr>
             </table>
+        </div>
+
+        <div class="info-box" style="margin-top: 20px;">
+            <h3>🔤 Output Encoding</h3>
+            {% if encoding_enabled %}
+            <p>Output encoding is <span class="status-on">enabled</span>. HTML special characters are escaped:</p>
+            <div class="code-block">
+<code>&lt; → &amp;lt;    &gt; → &amp;gt;    " → &amp;quot;    ' → &amp;#39;</code>
+            </div>
+            <p style="margin-top: 15px;">
+                Try searching for <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> - it will display as text, not execute.
+            </p>
+            {% else %}
+            <p><span class="status-off">Output encoding is disabled!</span></p>
+            <p style="margin-top: 10px;">
+                <strong>Try these attacks:</strong>
+                <br>• <code>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code>
+                <br>• <code>&lt;img src=x onerror="alert(document.cookie)"&gt;</code>
+                <br><br>
+                {% if csp_enabled %}
+                The HTML will be injected, but <strong>CSP blocks the script execution</strong>. Check the console (F12) for CSP errors.
+                {% else %}
+                The script will execute! {% if httponly_enabled %}But HttpOnly protects the cookie from being read.{% else %}And the cookie <code>secret=s3cr3t</code> will be exposed!{% endif %}
+                {% endif %}
+            </p>
+            {% endif %}
         </div>
 
         <div class="info-box" style="margin-top: 20px;">
@@ -502,7 +541,29 @@ Content Security Policy directive: "script-src 'self'"</code>
             {% endif %}
         </div>
 
-        {% if not csp_enabled %}
+        {% if not encoding_enabled and not csp_enabled %}
+        <div class="warning-box try-this">
+            <h4>💡 Try This (Encoding OFF + CSP OFF)</h4>
+            <p>
+                Search for <code>&lt;img src=x onerror="alert(document.cookie)"&gt;</code>
+                <br><br>
+                {% if httponly_enabled %}
+                The script executes but shows an empty cookie because HttpOnly protects it.
+                {% else %}
+                The script executes and shows <code>secret=s3cr3t</code> - full XSS!
+                {% endif %}
+            </p>
+        </div>
+        {% elif not encoding_enabled and csp_enabled %}
+        <div class="warning-box try-this">
+            <h4>💡 Try This (Encoding OFF, CSP ON)</h4>
+            <p>
+                Search for <code>&lt;img src=x onerror="alert(1)"&gt;</code>
+                <br><br>
+                The HTML is injected (you'll see a broken image), but CSP blocks the script. Check the console (F12).
+            </p>
+        </div>
+        {% elif not csp_enabled %}
         <div class="warning-box try-this">
             <h4>💡 Try This (CSP is OFF)</h4>
             <p>
@@ -541,23 +602,27 @@ def search():
     query = request.args.get("q", "")
 
     # Toggle states - default to OFF to show vulnerability
+    encoding_enabled = request.args.get("encoding", "0") == "1"
     csp_enabled = request.args.get("csp", "0") == "1"
     httponly_enabled = request.args.get("httponly", "0") == "1"
 
     if query:
         print(f"[DEBUG] Search query: {query}")
-        print(f"[DEBUG] CSP: {'ON' if csp_enabled else 'OFF'}, HttpOnly: {'ON' if httponly_enabled else 'OFF'}")
+        print(f"[DEBUG] Encoding: {'ON' if encoding_enabled else 'OFF'}, CSP: {'ON' if csp_enabled else 'OFF'}, HttpOnly: {'ON' if httponly_enabled else 'OFF'}")
 
     # Render template with toggle states
     response = make_response(render_template_string(
         SEARCH_TEMPLATE,
         query=query,
+        encoding_enabled=encoding_enabled,
         csp_enabled=csp_enabled,
         httponly_enabled=httponly_enabled
     ))
 
     # Cookie - HttpOnly flag controlled by toggle
-    response.set_cookie("secret", "s3cr3t", httponly=httponly_enabled)
+    # Delete existing cookie first to ensure HttpOnly flag change takes effect
+    response.delete_cookie("secret", path="/")
+    response.set_cookie("secret", "s3cr3t", httponly=httponly_enabled, path="/")
 
     # Content Security Policy - controlled by toggle
     if csp_enabled:
