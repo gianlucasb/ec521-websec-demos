@@ -234,14 +234,11 @@
                 This information leak enables <strong>blind SQL injection</strong>.
                 You can ask yes/no questions about the database!
                 <br><br>
-                Try in username field: <code>' or username like 'A%' --</code>
-                <br>
-                (Use any password - the <code>--</code> comments out the password check)
+                Try injecting SQL in the username field to discover usernames!
                 <br><br>
                 Does any username start with 'A'? What about 'E'?
                 <br>
-                Bruteforce one character at a time to discover the admin username,
-                <br>then use <code>EC521admin' --</code> to bypass the password!
+                Bruteforce one character at a time to discover the admin username.
             </p>
         </div>
     </div>
