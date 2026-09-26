@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terrier Bank | Online Banking Login</title>
+    <style>
+        :root {
+            --bu-red: #cc0000;
+            --bu-red-dark: #a10000;
+            --navy: #10182b;
+            --cream: #f6f4f1;
+            --border: #e2ded8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            min-height: 100vh;
+            background: var(--cream);
+            color: #222;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-strip {
+            background: var(--navy);
+            height: 6px;
+            width: 100%;
+        }
+
+        header.brand-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 26px 20px 10px;
+        }
+
+        header.brand-bar .logo-mark {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        header.brand-bar .wordmark {
+            font-size: 1.7rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: var(--navy);
+        }
+
+        header.brand-bar .wordmark span {
+            color: var(--bu-red);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 30px 20px 60px;
+        }
+
+        .login-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--bu-red);
+            border-radius: 6px;
+            padding: 36px 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 6px 24px rgba(16, 24, 43, 0.08);
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            font-weight: normal;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.82rem;
+            color: #777;
+            margin-bottom: 24px;
+        }
+
+        form { font-family: Arial, Helvetica, sans-serif; }
+
+        label {
+            display: block;
+            font-size: 0.82rem;
+            color: #444;
+            margin: 16px 0 6px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 4px;
+            border: 1px solid #c9c4bc;
+            background: #fff;
+            color: #222;
+            font-size: 0.95rem;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        input:focus { outline: none; border-color: var(--bu-red); }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            font-size: 0.78rem;
+        }
+
+        .form-options a { color: var(--bu-red-dark); text-decoration: none; }
+
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 13px;
+            border: none;
+            border-radius: 4px;
+            background: var(--bu-red);
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;
+            cursor: pointer;
+        }
+
+        button:hover { background: var(--bu-red-dark); }
+
+        .flash {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #fdecea;
+            border: 1px solid #f5c6cb;
+            color: #7a1f1f;
+            border-radius: 4px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            font-size: 0.82rem;
+        }
+
+        footer {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.72rem;
+            color: #999;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-strip"></div>
+
+    <header class="brand-bar">
+        <svg class="logo-mark" viewBox="0 0 100 100" role="img" aria-label="Terrier Bank">
+            <path d="M50 4 L91 18 V49 C91 74 73 91 50 96 C27 91 9 74 9 49 V18 Z"
+                  fill="#10182b" stroke="#c9a227" stroke-width="3"/>
+            <path d="M50 11 L84 23 V49 C84 70 69 84 50 89 C31 84 16 70 16 49 V23 Z"
+                  fill="none" stroke="#c9a227" stroke-width="1" opacity="0.5"/>
+            <text x="50" y="61" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+                  font-weight="700" font-size="40" fill="#ffffff" letter-spacing="-1">TB</text>
+        </svg>
+        <div class="wordmark">TERRIER<span> BANK</span></div>
+    </header>
+
+    <main>
+        <div class="login-card">
+            <h1>Sign in to Online Banking</h1>
+            <p class="subtitle">Access your accounts, transfers, and statements.</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash">{{ messages[0] }}</div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autofocus>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="form-options">
+                    <label><input type="checkbox" style="width:auto;"> Remember me</label>
+                    <a href="#">Forgot password?</a>
+                </div>
+                <button type="submit">Log In</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>&copy; 2026 Terrier Bank, N.A. All rights reserved.</footer>
+</body>
+</html>

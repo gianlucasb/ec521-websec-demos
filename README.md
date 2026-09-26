@@ -26,6 +26,7 @@ python app.py
 | `xss-stored` | 5007 | Stored XSS | Persistent XSS in a note-taking app |
 | `xss-dom` | 5008 | DOM XSS | Client-side XSS invisible to servers |
 | `sop-demo` | 5009, 5010 | Same-Origin Policy | Browser security boundaries between origins |
+| `csrf-demo` | 5012 | CSRF | Cross-site request forgery via a phishing link |
 
 ## Suggested Learning Path
 
@@ -43,6 +44,9 @@ python app.py
 
 ### Browser Security
 - Try `sop-demo` - understand why the Same-Origin Policy exists
+
+### CSRF
+- Try `csrf-demo` - log in, then click a crafted phishing link to see money silently transferred out of your account
 
 ## Requirements
 

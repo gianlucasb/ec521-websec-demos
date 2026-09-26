@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terrier Bank | Accounts</title>
+    <style>
+        :root {
+            --bu-red: #cc0000;
+            --bu-red-dark: #a10000;
+            --navy: #10182b;
+            --cream: #f6f4f1;
+            --border: #e2ded8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background: var(--cream);
+            color: #222;
+        }
+
+        header {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        .top-strip { background: var(--bu-red); height: 4px; width: 100%; }
+
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+
+        .brand .logo-mark { width: 34px; height: 34px; flex-shrink: 0; }
+
+        .brand .wordmark {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 1.15rem;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+
+        .brand .wordmark span { color: #ff6b6b; }
+
+        nav.links { display: flex; gap: 22px; font-size: 0.85rem; }
+
+        nav.links a { color: #cfd3dc; text-decoration: none; }
+
+        nav.links a.active { color: #fff; font-weight: bold; }
+
+        .user-bar { font-size: 0.8rem; color: #cfd3dc; display: flex; align-items: center; gap: 14px; }
+
+        .user-bar a { color: #ff9a9a; text-decoration: none; }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        section {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 22px 26px;
+        }
+
+        h2 {
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .flash {
+            background: #eaf7ee;
+            border: 1px solid #bfe6cb;
+            color: #235c34;
+            border-radius: 4px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+        }
+
+        .account-summary { display: flex; justify-content: space-between; align-items: center; }
+
+        .account-name { font-size: 0.9rem; color: #666; }
+
+        .account-number { font-size: 0.78rem; color: #999; margin-top: 2px; }
+
+        .balance-value { font-size: 2.3rem; font-weight: bold; color: var(--navy); text-align: right; }
+
+        .balance-label { font-size: 0.75rem; color: #999; text-align: right; text-transform: uppercase; }
+
+        .transfer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .transfer-grid .full { grid-column: 1 / -1; }
+
+        label { display: block; font-size: 0.78rem; color: #555; margin-bottom: 6px; font-weight: bold; }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 4px;
+            border: 1px solid #c9c4bc;
+            background: #fff;
+            color: #222;
+            font-size: 0.9rem;
+        }
+
+        input:focus { outline: none; border-color: var(--bu-red); }
+
+        button {
+            margin-top: 16px;
+            padding: 11px 24px;
+            border: none;
+            border-radius: 4px;
+            background: var(--bu-red);
+            color: #fff;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        button:hover { background: var(--bu-red-dark); }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+
+        th, td { text-align: left; padding: 10px 6px; border-bottom: 1px solid var(--border); }
+
+        th { color: #999; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; }
+
+        td.amount { text-align: right; color: var(--navy); font-weight: bold; }
+
+        .empty { font-size: 0.85rem; color: #888; }
+
+        footer {
+            text-align: center;
+            font-size: 0.72rem;
+            color: #999;
+            padding: 10px 20px 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-strip"></div>
+    <header>
+        <div class="nav-bar">
+            <div class="brand">
+                <svg class="logo-mark" viewBox="0 0 100 100" role="img" aria-label="Terrier Bank">
+                    <path d="M50 4 L91 18 V49 C91 74 73 91 50 96 C27 91 9 74 9 49 V18 Z"
+                          fill="#cc0000" stroke="#c9a227" stroke-width="3"/>
+                    <path d="M50 11 L84 23 V49 C84 70 69 84 50 89 C31 84 16 70 16 49 V23 Z"
+                          fill="none" stroke="#c9a227" stroke-width="1" opacity="0.6"/>
+                    <text x="50" y="61" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+                          font-weight="700" font-size="40" fill="#ffffff" letter-spacing="-1">TB</text>
+                </svg>
+                <div class="wordmark">TERRIER<span> BANK</span></div>
+            </div>
+            <nav class="links">
+                <a href="#" class="active">Accounts</a>
+                <a href="#">Transfers</a>
+                <a href="#">Statements</a>
+                <a href="#">Support</a>
+            </nav>
+            <div class="user-bar">
+                {{ username }}
+                <a href="{{ url_for('logout') }}">Log out</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="account-summary">
+            <div>
+                <div class="account-name">Everyday Checking</div>
+                <div class="account-number">Account ending in {{ (username ~ "00000000")[:8]|upper }}</div>
+            </div>
+            <div>
+                <div class="balance-label">Available Balance</div>
+                <div class="balance-value">${{ "{:,.2f}".format(balance) }}</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Send Money</h2>
+            <form method="POST" action="{{ url_for('transfer') }}">
+                <div class="transfer-grid">
+                    <div>
+                        <label>Recipient</label>
+                        <input type="text" name="to" required>
+                    </div>
+                    <div>
+                        <label>Amount</label>
+                        <input type="number" step="0.01" name="amount" required>
+                    </div>
+                    <div class="full">
+                        <label>Memo (optional)</label>
+                        <input type="text" name="description">
+                    </div>
+                </div>
+                <button type="submit">Send Transfer</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Recent Activity</h2>
+            {% if transfers %}
+                <table>
+                    <tr><th>Date</th><th>Recipient</th><th>Memo</th><th style="text-align:right;">Amount</th></tr>
+                    {% for t in transfers %}
+                    <tr>
+                        <td>{{ t.timestamp }}</td>
+                        <td>{{ t.to }}</td>
+                        <td>{{ t.description }}</td>
+                        <td class="amount">-${{ "{:,.2f}".format(t.amount) }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p class="empty">No recent transfers.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>&copy; 2026 Terrier Bank, N.A. All rights reserved.</footer>
+</body>
+</html>
